@@ -21,9 +21,9 @@ const RootStack = () => {
         screenOptions={{
           headerStyle: {
             backgroundColor: 'transparent',
-            elevation: 10, // remove shadow on Android
-            shadowOpacity: 0, // remove shadow on iOS
-            borderBottomWidth: 0, //for ios
+            // elevation: 0, // remove shadow on Android
+            // shadowOpacity: 0, // remove shadow on iOS
+            // borderBottomWidth: 0, //for ios
           },
           headerTintColor: tertiary,
           headerTransparent: true,
@@ -32,11 +32,11 @@ const RootStack = () => {
             paddingLeft: 20,
           },
         }}
-        initialRouteName="Login"
+        // initialRouteName="Login"
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen options={{headerTintColor: primary}} name="Welcome" component={Welcome} />
       </Stack.Navigator>
     </NavigationContainer>
   );
