@@ -28,7 +28,7 @@ import {
   TextLink,
   TextLinkContent,
 } from './../components/styles';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 // Colors
 const { brand, darkLight, primary } = Colors;
@@ -39,10 +39,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 // keyboard avoiding view
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 
+// api client
+import axios from 'axios';
+
 const Signup = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [show, setShow] = useState(false);
   const [date, setDate] = useState(new Date(2000, 0, 1));
+
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
 
   // Actual date of birth to be sent
   const [dob, setDob] = useState();
@@ -56,6 +62,36 @@ const Signup = ({ navigation }) => {
 
   const showDatePicker = () => {
     setShow(true);
+  };
+
+  // Form handling
+  const handleSignup = (credentials, setSubmitting) => {
+    handleMessage(null);
+    const url = 'https://whispering-headland-00232.herokuapp.com/user/signup';
+    axios
+      .post(url, credentials)
+      .then((response) => {
+        const result = response.data;
+        const { message, status, data } = result;
+
+        if (status !== 'SUCCESS') {
+          handleMessage(message, status);
+        } else {
+          navigation.navigate('Welcome', { ...data });
+        }
+
+        setSubmitting(false);
+      })
+      .catch((error) => {
+        console.log(error.JSON());
+        setSubmitting(false);
+        handleMessage('An error occurred. Check your network and try again');
+      });
+  };
+
+  const handleMessage = (message, type = 'FAILED') => {
+    setMessage(message);
+    setMessageType(type);
   };
 
   return (
@@ -78,22 +114,43 @@ const Signup = ({ navigation }) => {
           )}
 
           <Formik
-            initialValues={{ fullName: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
-            onSubmit={(values) => {
-              console.log(values);
-              navigation.navigate('Welcome');
+            initialValues={{ name: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
+            onSubmit={(values, { setSubmitting }) => {
+              values = { ...values, dateOfBirth: dob };
+
+              values.confirmPassword = 'Test1416';
+              values.dateOfBirth = '1999-10-04T05:00:00.000Z';
+              values.email = 'mary_test@gmail.com';
+              values.name = 'Mary Jackson';
+              values.password = 'Test1416';
+
+              if (
+                values.email == '' ||
+                values.password == '' ||
+                values.name == '' ||
+                values.dateOfBirth == '' ||
+                values.confirmPassword == ''
+              ) {
+                handleMessage('Please fill in all fields');
+                setSubmitting(false);
+              } else if (values.password !== values.confirmPassword) {
+                handleMessage('Password do not match');
+                setSubmitting(false);
+              } else {
+                handleSignup(values, setSubmitting);
+              }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
               <StyledFormArea>
                 <MyTextInput
                   label="Full Name"
                   icon="person"
                   placeholder="Richard Barnes"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange('fullName')}
-                  onBlur={handleBlur('fullName')}
-                  value={values.fullName}
+                  onChangeText={handleChange('name')}
+                  onBlur={handleBlur('name')}
+                  value={values.name}
                 />
 
                 <MyTextInput
@@ -148,16 +205,28 @@ const Signup = ({ navigation }) => {
                   setHidePassword={setHidePassword}
                 />
 
-                <MsgBox>...</MsgBox>
-                <StyledButton onPress={handleSubmit}>
-                  <ButtonText>Signup</ButtonText>
-                </StyledButton>
+                <MsgBox type={messageType}>{message}</MsgBox>
+
+                {!isSubmitting && (
+                  <StyledButton onPress={handleSubmit}>
+                    <ButtonText>Signup</ButtonText>
+                  </StyledButton>
+                )}
+
+                {isSubmitting && (
+                  <StyledButton disabled={true}>
+                    <ActivityIndicator size="large" color={primary} />
+                  </StyledButton>
+                )}
+
                 <Line />
                 <ExtraView>
                   <ExtraText>Already have an account??</ExtraText>
-                  <TextLink onPress={()=>{
-                    navigation.navigate('Login');
-                  }}>
+                  <TextLink
+                    onPress={() => {
+                      navigation.navigate('Login');
+                    }}
+                  >
                     <TextLinkContent>Login</TextLinkContent>
                   </TextLink>
                 </ExtraView>
