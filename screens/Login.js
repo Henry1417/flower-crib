@@ -55,7 +55,7 @@ const Login = ({ navigation }) => {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
   // credentials context
-  const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
+  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
 
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
@@ -78,6 +78,7 @@ const Login = ({ navigation }) => {
         handleMessage('An error occurred. Check your network and try again');
         console.log(error.toJSON());
       });
+    setSubmitting(false);
   };
 
   const handleMessage = (message, type = '') => {
@@ -136,6 +137,8 @@ const Login = ({ navigation }) => {
           <Formik
             initialValues={{ email: '', password: '' }}
             onSubmit={(values, { setSubmitting }) => {
+              values.email = 'richsimps@gmail.com';
+              values.password = 'test1234';
               if (values.email == '' || values.password == '') {
                 handleMessage('Please fill in all fields');
                 setSubmitting(false);
