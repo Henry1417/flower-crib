@@ -73,6 +73,13 @@ const Login = ({ navigation }) => {
     setMessageType(type);
   };
 
+  const handleGoogleSignin = () => {
+    const config = {
+      iosCLientId: `608325482195-s2vsj89hvvftkphq8teim0tntmug0b6q.apps.googleusercontent.com`,
+      androidClientId: `608325482195-hntm1jiks7tqr6dpkit0d6jeuuq6280k.apps.googleusercontent.com`,
+    };
+  };
+
   return (
     <KeyboardAvoidingWrapper>
       <StyledContainer>
