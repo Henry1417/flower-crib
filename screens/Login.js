@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 
 // formik
@@ -41,11 +41,20 @@ import axios from 'axios';
 
 import * as Google from 'expo-google-app-auth';
 
-const Login = ({ navigation, route }) => {
+// async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
+
+const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
+  // credentials context
+  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
 
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
@@ -56,14 +65,10 @@ const Login = ({ navigation, route }) => {
         const result = response.data;
         const { message, status, data } = result;
 
-        console.log('Message: ' + message);
-        console.log('status: ' + status);
-
         if (status !== 'SUCCESS') {
           handleMessage(message, status);
         } else {
-          handleMessage(message, status);
-          navigation.navigate('Welcome', { ...data[0], handleMessage });
+          persistLogin({ ...data[0] }, message, status);
         }
 
         setSubmitting(false);
@@ -95,17 +100,28 @@ const Login = ({ navigation, route }) => {
 
         if (type == 'success') {
           const { email, name, photoUrl } = user;
-          handleMessage('Google signin successful', 'SUCCESS');
-          setTimeout(() => navigation.navigate('Welcome', { email, name, photoUrl, handleMessage }), 1000);
+          persistLogin({ email, name, photoUrl }, 'Google signin successful', 'SUCCESS');
         } else {
           handleMessage('Google signin was cancelled');
         }
         setGoogleSubmitting(false);
       })
       .catch((error) => {
-        console.log(error);
         handleMessage('An error ocurred. Check your network and try again');
+        console.log(error);
         setGoogleSubmitting(false);
+      });
+  };
+
+  const persistLogin = (credentials, message, status) => {
+    AsyncStorage.setItem('henryCribCredentials', JSON.stringify(credentials))
+      .then(() => {
+        handleMessage(message, status);
+        setStoredCredentials(credentials);
+      })
+      .catch((error) => {
+        handleMessage('Persisting login failed');
+        console.log(error);
       });
   };
 
@@ -121,10 +137,11 @@ const Login = ({ navigation, route }) => {
           <Formik
             initialValues={{ email: '', password: '' }}
             onSubmit={(values, { setSubmitting }) => {
-              values.email = 'henry_test@gmail.com';
-              values.password = 'mypasstest';
-              // values.email = 'mary_test@gmail.com';
-              // values.password = 'Test1416';
+              // Data for test
+              // values.email = 'henry_test@gmail.com';
+              // values.password = 'mypasstest';
+              values.email = 'mary_test@gmail.com';
+              values.password = 'Test1416';
 
               if (values.email == '' || values.password == '') {
                 handleMessage('Please fill in all fields');

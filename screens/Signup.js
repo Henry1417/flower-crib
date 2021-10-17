@@ -42,6 +42,12 @@ import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 // api client
 import axios from 'axios';
 
+// async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
+
 const Signup = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [show, setShow] = useState(false);
@@ -50,7 +56,7 @@ const Signup = ({ navigation }) => {
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
 
-  // Actual date of birth to be sent
+  // Actual value to be sent
   const [dob, setDob] = useState();
 
   const onChange = (event, selectedDate) => {
@@ -63,6 +69,9 @@ const Signup = ({ navigation }) => {
   const showDatePicker = () => {
     setShow(true);
   };
+
+  // context
+  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
 
   // Form handling
   const handleSignup = (credentials, setSubmitting) => {
@@ -77,7 +86,7 @@ const Signup = ({ navigation }) => {
         if (status !== 'SUCCESS') {
           handleMessage(message, status);
         } else {
-          navigation.navigate('Welcome', { ...data });
+          persistLogin({ ...data }, message, status);
         }
 
         setSubmitting(false);
@@ -92,6 +101,18 @@ const Signup = ({ navigation }) => {
   const handleMessage = (message, type = 'FAILED') => {
     setMessage(message);
     setMessageType(type);
+  };
+
+  const persistLogin = (credentials, message, status) => {
+    AsyncStorage.setItem('henryCribCredentials', JSON.stringify(credentials))
+      .then(() => {
+        handleMessage(message, status);
+        setStoredCredentials(credentials);
+      })
+      .catch((error) => {
+        console.log(error);
+        handleMessage('Persisting login failed');
+      });
   };
 
   return (
@@ -118,11 +139,12 @@ const Signup = ({ navigation }) => {
             onSubmit={(values, { setSubmitting }) => {
               values = { ...values, dateOfBirth: dob };
 
-              values.dateOfBirth = '1999-10-04T05:00:00.000Z';
-              values.email = 'henry_test@gmail.com';
-              values.name = 'Henry';
-              values.password = 'mypasstest';
-              values.confirmPassword = 'mypasstest';
+              // Data for test
+              // values.dateOfBirth = '1999-10-04T05:00:00.000Z';
+              // values.email = 'henry_test1@gmail.com';
+              // values.name = 'Henry';
+              // values.password = 'mypasstest1';
+              // values.confirmPassword = 'mypasstest1';
 
               if (
                 values.email == '' ||
