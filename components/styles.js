@@ -19,9 +19,14 @@ const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
 
 export const StyledContainer = styled.View`
   flex: 1;
-  padding: 25px;
-  padding-top: ${StatusBarHeight + 30}px;
+  padding: 10px;
   background-color: ${primary};
+
+  ${(props) =>
+    props.loginPage
+      ? `padding-top: ${StatusBarHeight}px;`
+      : `padding-top: ${StatusBarHeight + 30}px;
+  `}
 `;
 
 export const InnerContainer = styled.View`

@@ -1,5 +1,6 @@
 import React from 'react';
 
+// colors
 import { Colors } from './../components/styles';
 const { primary, tertiary } = Colors;
 
@@ -24,14 +25,9 @@ const RootStack = () => {
         <NavigationContainer style={{ backgroundColor: 'red' }}>
           <Stack.Navigator
             screenOptions={{
-              headerStyle: {
-                backgroundColor: 'transparent',
-                // elevation: 0, // remove shadow on Android
-                // shadowOpacity: 0, // remove shadow on iOS
-                // borderBottomWidth: 0, //for ios
-              },
-              headerTintColor: tertiary,
+              headerShadowVisible: false,
               headerTransparent: true,
+              headerTintColor: tertiary,
               headerTitle: '',
               headerLeftContainerStyle: {
                 paddingLeft: 20,

@@ -127,7 +127,7 @@ const Login = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingWrapper>
-      <StyledContainer>
+      <StyledContainer loginPage={true}>
         <StatusBar style="dark" />
         <InnerContainer>
           <PageLogo resizeMode="cover" source={require('./../assets/img/expo-bg1.png')} />
