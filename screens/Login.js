@@ -89,8 +89,10 @@ const Login = ({ navigation }) => {
   const handleGoogleSignin = () => {
     setGoogleSubmitting(true);
     const config = {
-      iosClientId: `782607156495-2de6ecovh62rsu1ec5cduv9li7g33ki3.apps.googleusercontent.com`,
-      androidClientId: `782607156495-t08mgso56tjsp7und7lf81b2bmis239f.apps.googleusercontent.com`,
+      // iosClientId: `782607156495-2de6ecovh62rsu1ec5cduv9li7g33ki3.apps.googleusercontent.com`,
+      // androidClientId: `782607156495-t08mgso56tjsp7und7lf81b2bmis239f.apps.googleusercontent.com`,
+      iosCLientId: `608325482195-s2vsj89hvvftkphq8teim0tntmug0b6q.apps.googleusercontent.com`,
+      androidClientId: `608325482195-hntm1jiks7tqr6dpkit0d6jeuuq6280k.apps.googleusercontent.com`,
       scopes: ['profile', 'email'],
     };
 
