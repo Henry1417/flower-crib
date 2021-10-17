@@ -4,7 +4,7 @@ import React from 'react';
 import { KeyboardAvoidingView, Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native';
 
 //colors
-import { Colors } from './styles';
+import { Colors } from './../components/styles';
 const { primary } = Colors;
 
 const KeyboardAvoidingWrapper = ({ children }) => {

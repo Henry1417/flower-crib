@@ -118,11 +118,11 @@ const Signup = ({ navigation }) => {
             onSubmit={(values, { setSubmitting }) => {
               values = { ...values, dateOfBirth: dob };
 
-              values.confirmPassword = 'Test1416';
               values.dateOfBirth = '1999-10-04T05:00:00.000Z';
-              values.email = 'mary_test@gmail.com';
-              values.name = 'Mary Jackson';
-              values.password = 'Test1416';
+              values.email = 'henry_test@gmail.com';
+              values.name = 'Henry';
+              values.password = 'mypasstest';
+              values.confirmPassword = 'mypasstest';
 
               if (
                 values.email == '' ||

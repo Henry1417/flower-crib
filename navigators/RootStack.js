@@ -16,7 +16,7 @@ const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer style={{backgroundColor: 'red'}}>
       <Stack.Navigator
         screenOptions={{
           headerStyle: {

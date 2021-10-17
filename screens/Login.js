@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 
 // formik
@@ -36,13 +36,16 @@ const { brand, darkLight, primary } = Colors;
 // keyboard avoiding view
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 
-// api client
+// Api client
 import axios from 'axios';
 
-const Login = ({ navigation }) => {
+import * as Google from 'expo-google-app-auth';
+
+const Login = ({ navigation, route }) => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState();
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
@@ -53,10 +56,14 @@ const Login = ({ navigation }) => {
         const result = response.data;
         const { message, status, data } = result;
 
+        console.log('Message: ' + message);
+        console.log('status: ' + status);
+
         if (status !== 'SUCCESS') {
           handleMessage(message, status);
         } else {
-          navigation.navigate('Welcome', { ...data[0] });
+          handleMessage(message, status);
+          navigation.navigate('Welcome', { ...data[0], handleMessage });
         }
 
         setSubmitting(false);
@@ -74,10 +81,32 @@ const Login = ({ navigation }) => {
   };
 
   const handleGoogleSignin = () => {
+    setGoogleSubmitting(true);
+
     const config = {
       iosCLientId: `608325482195-s2vsj89hvvftkphq8teim0tntmug0b6q.apps.googleusercontent.com`,
       androidClientId: `608325482195-hntm1jiks7tqr6dpkit0d6jeuuq6280k.apps.googleusercontent.com`,
+      scopes: ['profile', 'email'],
     };
+
+    Google.logInAsync(config)
+      .then((result) => {
+        const { type, user } = result;
+
+        if (type == 'success') {
+          const { email, name, photoUrl } = user;
+          handleMessage('Google signin successful', 'SUCCESS');
+          setTimeout(() => navigation.navigate('Welcome', { email, name, photoUrl, handleMessage }), 1000);
+        } else {
+          handleMessage('Google signin was cancelled');
+        }
+        setGoogleSubmitting(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        handleMessage('An error ocurred. Check your network and try again');
+        setGoogleSubmitting(false);
+      });
   };
 
   return (
@@ -92,8 +121,8 @@ const Login = ({ navigation }) => {
           <Formik
             initialValues={{ email: '', password: '' }}
             onSubmit={(values, { setSubmitting }) => {
-              values.email = 'richsimps@gmail.com';
-              values.password = 'test1234';
+              values.email = 'henry_test@gmail.com';
+              values.password = 'mypasstest';
               // values.email = 'mary_test@gmail.com';
               // values.password = 'Test1416';
 
@@ -145,11 +174,18 @@ const Login = ({ navigation }) => {
                   </StyledButton>
                 )}
                 <Line />
-                <StyledButton google={true} onPress={handleSubmit}>
-                  <Fontisto name="google" color={primary} size={25} />
-                  <ButtonText google={true}>Sign in with Google</ButtonText>
-                </StyledButton>
+                {!googleSubmitting && (
+                  <StyledButton google={true} onPress={handleGoogleSignin}>
+                    <Fontisto name="google" color={primary} size={25} />
+                    <ButtonText google={true}>Sign in with Google</ButtonText>
+                  </StyledButton>
+                )}
 
+                {googleSubmitting && (
+                  <StyledButton google={true} disabled={true}>
+                    <ActivityIndicator size="large" color={primary} />
+                  </StyledButton>
+                )}
                 <ExtraView>
                   <ExtraText>Don't have an account aready?</ExtraText>
                   <TextLink

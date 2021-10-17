@@ -15,7 +15,9 @@ import {
 } from './../components/styles';
 
 const Welcome = ({ navigation, route }) => {
-  const { name, email, dateOfBirth } = route.params;
+  const { name, email, photoUrl, handleMessage } = route.params;
+  const AvatarImg = photoUrl ? { uri: photoUrl } : require('./../assets/img/expo-bg1.png');
+
   return (
     <>
       <StatusBar style="light" />
@@ -23,15 +25,15 @@ const Welcome = ({ navigation, route }) => {
         <WelcomeImage resizeMode="cover" source={require('./../assets/img/expo-bg2.png')} />
         <WelcomeContainer>
           <PageTitle welcome={true}>Welcome! Buddy</PageTitle>
-          <SubTitle welcome={true}>{name || 'Olga Simpson'}</SubTitle>
-          <SubTitle welcome={true}>{email || 'olgasimo@gmail.com'}</SubTitle>
-          {/* <SubTitle welcome={true}>{dateOfBirth || '0000-00-00'}</SubTitle> */}
+          <SubTitle welcome={true}>{name || 'Henry Test'}</SubTitle>
+          <SubTitle welcome={true}>{email || 'henry_test@gmail.com'}</SubTitle>
 
           <StyledFormArea>
-            <Avatar resizeMode="cover" source={require('./../assets/img/expo-bg1.png')} />
+            <Avatar resizeMode="cover" source={AvatarImg} />
             <Line />
             <StyledButton
               onPress={() => {
+                handleMessage('');
                 navigation.navigate('Login');
               }}
             >
