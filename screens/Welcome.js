@@ -1,18 +1,10 @@
 import React, { useContext } from 'react';
-import { StatusBar } from 'expo-status-bar';
 
-import {
-  InnerContainer,
-  PageTitle,
-  SubTitle,
-  StyledFormArea,
-  StyledButton,
-  ButtonText,
-  Line,
-  WelcomeContainer,
-  WelcomeImage,
-  Avatar,
-} from './../components/styles';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import Home from './../screens/Home';
+import Profile from './../screens/Profile';
 
 // Async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,11 +12,50 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // credentials context
 import { CredentialsContext } from './../components/CredentialsContext';
 
+const Tab = createMaterialBottomTabNavigator();
+
 const Welcome = () => {
-  // context
+  return (
+    <>
+      <Tab.Navigator
+        initialRouteName="Home"
+        activeColor="#ffffff"
+        labelStyle={{ fontSize: 12 }}
+        barStyle={{ backgroundColor: '#6D28D9' }}
+      >
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="home" color={color} size={26} />,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            tabBarLabel: 'Profile',
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
+          }}
+        />
+        <Tab.Screen
+          name="Notifications"
+          component={LogOut}
+          options={{
+            tabBarLabel: 'Exit',
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="logout" size={24} color={color} />,
+          }}
+        />
+      </Tab.Navigator>
+    </>
+  );
+};
+
+export default Welcome;
+
+function LogOut({ navigation }) {
   const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
-  const { name, email, photoUrl } = storedCredentials;
-  const AvatarImg = photoUrl ? { uri: photoUrl } : require('./../assets/img/expo-bg1.png');
 
   const clearLogin = () => {
     AsyncStorage.removeItem('henryCribCredentials')
@@ -34,31 +65,9 @@ const Welcome = () => {
       .catch((error) => console.log(error));
   };
 
-  return (
-    <>
-      <StatusBar style="light" />
-      <InnerContainer>
-        <WelcomeImage resizeMode="cover" source={require('./../assets/img/expo-bg2.png')} />
-        <WelcomeContainer>
-          <PageTitle welcome={true}>Welcome! Buddy</PageTitle>
-          <SubTitle welcome={true}>{name || 'Henry Test'}</SubTitle>
-          <SubTitle welcome={true}>{email || 'henry_test@gmail.com'}</SubTitle>
+  React.useEffect(() => {
+    clearLogin();
+  }, [navigation]);
 
-          <StyledFormArea>
-            <Avatar resizeMode="cover" source={AvatarImg} />
-            <Line />
-            <StyledButton
-              // handleMessage('');
-              // navigation.navigate('Login');
-              onPress={clearLogin}
-            >
-              <ButtonText>Logout</ButtonText>
-            </StyledButton>
-          </StyledFormArea>
-        </WelcomeContainer>
-      </InnerContainer>
-    </>
-  );
-};
-
-export default Welcome;
+  return <></>;
+}
